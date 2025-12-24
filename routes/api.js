@@ -1,7 +1,6 @@
 "use strict";
 
 const { ObjectId } = require("mongodb");
-const connect = require("../connection");
 
 module.exports = function (app) {
 	app
