@@ -16,53 +16,74 @@
     <header>
       <h1 id="projectTitle"></h1>
     </header>
-    <center>
-      <div id="submitNewIssue">
-        <br />
-        <h3>Submit a new issue:</h3>
-        <form id="newIssue" method="post" action="/api/">
-          <input
-            type="text"
-            name="issue_title"
-            placeholder="*Title"
-            style="width: 320px; margin-bottom: 3px"
-            required=""
-          /><br />
-          <textarea
-            type="text"
-            name="issue_text"
-            placeholder="*Text"
-            style="width: 320px; height: 100px"
-            required=""
-          ></textarea
-          ><br />
-          <input
-            type="text"
-            name="created_by"
-            placeholder="*Created by"
-            style="width: 100px"
-            required=""
-          />
-          <input
-            type="text"
-            name="assigned_to"
-            placeholder="(opt)Assigned to"
-            style="width: 100px"
-          />
-          <input
-            type="text"
-            name="status_text"
-            placeholder="(opt)Status text"
-            style="width: 100px"
-          /><br />
-          <button type="submit">Submit Issue</button>
+
+    <main class="container">
+      <section class="card">
+        <h2>Submit a new issue</h2>
+        <p class="text-muted">Add a ticket to this project.</p>
+        <form id="newIssue" class="issue-form" method="post" action="/api/">
+          <div class="form-group">
+            <label class="form-label">Title*</label>
+            <input
+              type="text"
+              name="issue_title"
+              class="form-control"
+              placeholder="Short summary"
+              required=""
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description*</label>
+            <textarea
+              type="text"
+              name="issue_text"
+              class="form-control"
+              placeholder="What happened?"
+              required=""
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Created by*</label>
+            <input
+              type="text"
+              name="created_by"
+              class="form-control"
+              placeholder="Name"
+              required=""
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned to</label>
+            <input
+              type="text"
+              name="assigned_to"
+              class="form-control"
+              placeholder="Assignee"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status text</label>
+            <input
+              type="text"
+              name="status_text"
+              class="form-control"
+              placeholder="Status note"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Issue</button>
         </form>
-      </div>
+      </section>
 
-      <div id="issueDisplay"></div>
+      <section class="card">
+        <h2>Open issues</h2>
+        <div id="issueDisplay"></div>
 
-      <hr style="margin: 50px; margin-top: 200px" />
-    </center>
+        <div class="response-area">
+          <h3>Raw GET Response</h3>
+          <pre id="rawGet"></pre>
+        </div>
+      </section>
+    </main>
 
     <script
       src="https://code.jquery.com/jquery-2.2.1.min.js"
@@ -78,6 +99,7 @@
           type: "GET",
           url: url,
           success: function (data) {
+            $("#rawGet").text(JSON.stringify(data, null, 2));
             let issues = [];
             data.forEach(function (ele) {
               console.log(ele);
@@ -120,6 +142,8 @@
             url: url,
             data: $(this).serialize(),
             success: function (data) {
+              $("#newIssue")[0].reset();
+              $("#rawGet").text(JSON.stringify(data, null, 2));
               window.location.reload(true);
             },
           });

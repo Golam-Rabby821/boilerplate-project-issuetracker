@@ -33,7 +33,7 @@
             <h3 class="form-title">Create New Issue</h3>
             <form id="testForm">
               <div class="form-group">
-                <label class="form-label">Title*</label>
+                <label for="issue_title" class="form-label">Title*</label>
                 <input
                   type="text"
                   name="issue_title"
@@ -42,7 +42,7 @@
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Description*</label>
+                <label for="issue_text" class="form-label">Description*</label>
                 <textarea
                   name="issue_text"
                   class="form-control"
@@ -50,7 +50,7 @@
                 ></textarea>
               </div>
               <div class="form-group">
-                <label class="form-label">Created By*</label>
+                <label for="created_by" class="form-label">Created By*</label>
                 <input
                   type="text"
                   name="created_by"
@@ -59,11 +59,11 @@
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Assigned To</label>
+                <label for="assigned_to" class="form-label">Assigned To</label>
                 <input type="text" name="assigned_to" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">Status Text</label>
+                <label for="status_text" class="form-label">Status Text</label>
                 <input type="text" name="status_text" class="form-control" />
               </div>
               <button type="submit" class="btn btn-primary">
@@ -77,31 +77,33 @@
             <h3 class="form-title">Update Issue</h3>
             <form id="testForm2">
               <div class="form-group">
-                <label class="form-label">Issue ID*</label>
+                <label for="_id" class="form-label">Issue ID*</label>
                 <input type="text" name="_id" class="form-control" required />
               </div>
               <div class="form-group">
-                <label class="form-label">New Title</label>
+                <label for="issue_title" class="form-label">New Title</label>
                 <input type="text" name="issue_title" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">New Description</label>
+                <label for="issue_text" class="form-label"
+                  >New Description</label
+                >
                 <textarea name="issue_text" class="form-control"></textarea>
               </div>
               <div class="form-group">
-                <label class="form-label">Created By</label>
+                <label for="created_by" class="form-label">Created By</label>
                 <input type="text" name="created_by" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">Assigned To</label>
+                <label for="assigned_to" class="form-label">Assigned To</label>
                 <input type="text" name="assigned_to" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">Status Text</label>
+                <label for="status_text" class="form-label">Status Text</label>
                 <input type="text" name="status_text" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">Close Issue</label>
+                <label for="open" class="form-label">Close Issue</label>
                 <div>
                   <input
                     type="checkbox"
@@ -123,7 +125,7 @@
             <h3 class="form-title">Delete Issue</h3>
             <form id="testForm3">
               <div class="form-group">
-                <label class="form-label">Issue ID</label>
+                <label for="_id" class="form-label">Issue ID</label>
                 <input type="text" name="_id" class="form-control" required />
               </div>
               <button type="submit" class="btn btn-danger">Delete Issue</button>
@@ -174,7 +176,8 @@
             type: "post",
             data: $("#testForm").serialize(),
             success: function (data) {
-              $("#jsonResult").text(JSON.stringify(data));
+              $("#jsonResult").text(JSON.stringify(data, null, 2));
+              $("#testForm")[0].reset();
             },
           });
           e.preventDefault();
@@ -185,7 +188,8 @@
             type: "put",
             data: $("#testForm2").serialize(),
             success: function (data) {
-              $("#jsonResult").text(JSON.stringify(data));
+              $("#jsonResult").text(JSON.stringify(data, null, 2));
+              $("#testForm2")[0].reset();
             },
           });
           e.preventDefault();
@@ -196,7 +200,8 @@
             type: "delete",
             data: $("#testForm3").serialize(),
             success: function (data) {
-              $("#jsonResult").text(JSON.stringify(data));
+              $("#jsonResult").text(JSON.stringify(data, null, 2));
+              $("#testForm3")[0].reset();
             },
           });
           e.preventDefault();

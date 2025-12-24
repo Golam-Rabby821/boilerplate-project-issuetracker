@@ -1,65 +1,62 @@
-'use strict';
+"use strict";
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
 
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const expect      = require('chai').expect;
-const cors        = require('cors');
-require('dotenv').config();
+const apiRoutes = require("./routes/api.js");
+const fccTestingRoutes = require("./routes/fcctesting.js");
+const runner = require("./test-runner");
 
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
+const DB_NAME = process.env.DB_NAME || "issuetracker";
+const PORT = process.env.PORT || 3000;
 
-let app = express();
+const app = express();
+let client;
 
-app.use('/public', express.static(process.cwd() + '/public'));
-
-app.use(cors({origin: '*'})); //For FCC testing purposes only
-
-
-
+app.use("/public", express.static(process.cwd() + "/public"));
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//Sample front-end
-app.route('/:project/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/issue.html');
-  });
-
-//Index page (static HTML)
-app.route('/')
-  .get(function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
-  });
-
-//For FCC testing purposes
 fccTestingRoutes(app);
+apiRoutes(app);
 
-//Routing for API 
-apiRoutes(app);  
-    
-//404 Not Found Middleware
-app.use(function(req, res, next) {
-  res.status(404)
-    .type('text')
-    .send('Not Found');
+app.use(function (req, res) {
+	res.status(404).type("text").send("Not Found");
 });
 
-//Start our server and tests!
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-  if(process.env.NODE_ENV==='test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch(e) {
-        console.log('Tests are not valid:');
-        console.error(e);
-      }
-    }, 3500);
-  }
-});
+async function start() {
+	try {
+		client = new MongoClient(process.env.MONGO_URI, {
+			maxPoolSize: 10,
+			serverSelectionTimeoutMS: 5000,
+		});
+		await client.connect();
+		app.locals.db = client.db(DB_NAME);
+		console.log(`Connected to MongoDB, DB: ${DB_NAME}`);
+		const listener = app.listen(PORT, () => {
+			console.log(`Listening on ${PORT}`);
+			if (process.env.NODE_ENV === "test") {
+				console.log("Running Tests...");
+				setTimeout(() => runner.run(), 3500);
+			}
+		});
 
-module.exports = app; //for testing
+		const shutdown = async () => {
+			console.log("Shutting down...");
+			listener.close(() => process.exit(0));
+			if (client) await client.close();
+		};
+		process.on("SIGINT", shutdown);
+		process.on("SIGTERM", shutdown);
+	} catch (err) {
+		console.error("Failed to initialize database connection:", err);
+		process.exit(1); // fail fast
+	}
+}
+
+start();
+
+module.exports = app;
